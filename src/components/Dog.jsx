@@ -9,23 +9,24 @@ const Dog = () => {
     })
     const texture = useTexture({
         normalMap: "/dog_normals.jpg",
+        sampleMatCap: "/matcap/mat-2.png"
     })
     texture.normalMap.flipY = false
+
     model.scene.traverse((child) => {
         if (child.name.includes("DOG")) {
-            child.material = new THREE.MeshStandardMaterial({
+            child.material = new THREE.MeshMatcapMaterial({
                 normalMap: texture.normalMap,
-                color: "#D4AF37",
-                roughness: 0.5,
-                metalness: 1,
+                matcap: texture.sampleMatCap,
+                // color: "#D4AF37",
             })
         }
     })
     return (
         <>
             <primitive object={model.scene} position={[0.2, -0.58, 0]} rotation={[0, -5.7, 0]} />
-            <directionalLight position={[-10, 10, 20]} intensity={10} color={"#D4AF37"} />
-            <directionalLight position={[10, 10, -20]} intensity={10} color={"#D4AF37"} />
+            <directionalLight position={[-10, 10, 20]} intensity={10} color={"#ffffff"} />
+            <directionalLight position={[10, 10, -20]} intensity={10} color={"#ffffff"} />
             {/* <OrbitControls /> */}
         </>
     )
