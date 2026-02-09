@@ -4,22 +4,27 @@ import { OrbitControls, useGLTF, useTexture } from "@react-three/drei"
 const Dog = () => {
     const model = useGLTF("/models/dog.drc.glb")
 
-    useThree(({ camera }) => {
+    useThree(({ camera, scene, gl }) => {
         camera.position.z = 0.5
+        gl.toneMapping = THREE.ReinhardToneMapping
+        gl.outputColorSpace = THREE.SRGBColorSpace
     })
-    const texture = useTexture({
-        normalMap: "/dog_normals.jpg",
-        sampleMatCap: "/matcap/mat-2.png"
+
+    const [normalMap, sampleMatCap] = (useTexture(["/dog_normals.jpg", "/matcap/mat-2.png"]))
+        .map(texture => {
+            texture.flipY = false
+            texture.colorSpace = THREE.SRGBColorSpace
+            return texture
+        })
+
+    const dogMaterial = new THREE.MeshMatcapMaterial({
+        normalMap: normalMap,
+        matcap: sampleMatCap,
     })
-    texture.normalMap.flipY = false
 
     model.scene.traverse((child) => {
         if (child.name.includes("DOG")) {
-            child.material = new THREE.MeshMatcapMaterial({
-                normalMap: texture.normalMap,
-                matcap: texture.sampleMatCap,
-                // color: "#D4AF37",
-            })
+            child.material = dogMaterial
         }
     })
     return (
