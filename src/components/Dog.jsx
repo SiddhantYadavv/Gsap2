@@ -1,6 +1,7 @@
 import { useThree } from "@react-three/fiber"
 import * as THREE from "three"
-import { OrbitControls, useGLTF, useTexture } from "@react-three/drei"
+import { OrbitControls, useGLTF, useTexture, useAnimations } from "@react-three/drei"
+import { useEffect } from "react"
 const Dog = () => {
     const model = useGLTF("/models/dog.drc.glb")
 
@@ -10,7 +11,13 @@ const Dog = () => {
         gl.outputColorSpace = THREE.SRGBColorSpace
     })
 
-    const [normalMap, sampleMatCap] = (useTexture(["/dog_normals.jpg", "/matcap/mat-2.png"]))
+    const { actions } = useAnimations(model.animations, model.scene)
+
+    useEffect(() => {
+        actions["Take 001"].reset().fadeIn(0.5).play()
+    }, [actions])
+
+    const [normalMap, sampleMatCap, branchMap, branchesNormalMap] = (useTexture(["/dog_normals.jpg", "/matcap/mat-2.png", "/branches_diffuse.jpeg", "/branches_normals.jpeg"]))
         .map(texture => {
             texture.flipY = false
             texture.colorSpace = THREE.SRGBColorSpace
@@ -22,9 +29,16 @@ const Dog = () => {
         matcap: sampleMatCap,
     })
 
+    const branchMaterial = new THREE.MeshMatcapMaterial({
+        normalMap: branchesNormalMap,
+        map: branchMap,
+    })
+
     model.scene.traverse((child) => {
         if (child.name.includes("DOG")) {
             child.material = dogMaterial
+        } else {
+            child.material = branchMaterial
         }
     })
     return (
