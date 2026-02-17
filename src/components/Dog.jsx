@@ -17,9 +17,16 @@ const Dog = () => {
         actions["Take 001"].reset().fadeIn(0.5).play()
     }, [actions])
 
-    const [normalMap, sampleMatCap, branchMap, branchesNormalMap] = (useTexture(["/dog_normals.jpg", "/matcap/mat-2.png", "/branches_diffuse.jpeg", "/branches_normals.jpeg"]))
+    const [normalMap, sampleMatCap] = (useTexture(["/dog_normals.jpg", "/matcap/mat-2.png"]))
         .map(texture => {
             texture.flipY = false
+            texture.colorSpace = THREE.SRGBColorSpace
+            return texture
+        })
+
+    const [branchMap, branchesNormalMap] = (useTexture(["/branches_diffuse.jpeg", "/branches_normals.jpeg"]))
+        .map(texture => {
+            texture.flipY = true
             texture.colorSpace = THREE.SRGBColorSpace
             return texture
         })
@@ -46,7 +53,7 @@ const Dog = () => {
             <primitive object={model.scene} position={[0.2, -0.58, 0]} rotation={[0, -5.7, 0]} />
             <directionalLight position={[-10, 10, 20]} intensity={10} color={"#ffffff"} />
             <directionalLight position={[10, 10, -20]} intensity={10} color={"#ffffff"} />
-            {/* <OrbitControls /> */}
+            <OrbitControls />
         </>
     )
 }
